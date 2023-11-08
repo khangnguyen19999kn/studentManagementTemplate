@@ -69,11 +69,17 @@ export default function LayoutContainer({ children }: { children: ReactNode }) {
         {!isCollapsed ? <h1 className={styleLayout.titleNav}>Student Management</h1> : ""}
         <div className={styleLayout.groupItemNavbar}>
           <Menu theme="dark" defaultSelectedKeys={["1"]} mode="inline">
-            {items.map(menuItem => (
-              <Menu.Item key={menuItem.key} icon={menuItem.icon} disabled={menuItem.disabled}>
-                <Link to={menuItem.url}>{menuItem.label}</Link>
-              </Menu.Item>
-            ))}
+            {items.map(menuItem =>
+              menuItem.disabled ? (
+                <Menu.Item key={menuItem.key} disabled={true}>
+                  {menuItem.label}
+                </Menu.Item>
+              ) : (
+                <Menu.Item key={menuItem.key}>
+                  <Link to={menuItem.url}>{menuItem.label}</Link>
+                </Menu.Item>
+              )
+            )}
           </Menu>
         </div>
       </Sider>

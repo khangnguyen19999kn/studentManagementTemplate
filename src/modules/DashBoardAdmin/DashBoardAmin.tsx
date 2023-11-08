@@ -16,6 +16,7 @@ export default function DashBoardAmin() {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const { data: dataStudents, refetch } = useGetStudentList();
   const { mutateAsync: addStudentMutation } = useAddStudent();
+  const [inputName, setInputName] = useState("");
   const { openNotificationSuccess, contextHolder } = useNotification();
 
   const jsonString = convertStringToJSON(dataStudents);
@@ -28,7 +29,6 @@ export default function DashBoardAmin() {
     }
   }
   const onFinish = async (values: IStudent) => {
-    console.log("Success:", values);
     const payload = templateData(
       {
         ...values,
@@ -45,12 +45,41 @@ export default function DashBoardAmin() {
     await addStudentMutation(payload);
     return refetch();
   };
+  let timeout: NodeJS.Timeout | null = null;
+
+  const debouncedHandleInputName = (value: string) => {
+    setInputName(value);
+  };
+
+  const handleInputName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+
+    timeout = setTimeout(() => {
+      debouncedHandleInputName(value);
+    }, 500);
+  };
+  const filterDataByName = () => {
+    if (inputName === "") {
+      return data;
+    }
+    return data.filter(item => {
+      return item.name.toLowerCase().includes(inputName.toLowerCase());
+    });
+  };
 
   return (
     <div className={style.container}>
       {contextHolder}
       <div className={style.groupInputButton}>
-        <Input className={style.input} placeholder="Enter the name of student to find" />
+        <Input
+          className={style.input}
+          placeholder="Enter the name of student to find"
+          onChange={handleInputName}
+        />
         <Button
           onClick={() => {
             setIsOpenModal(true);
@@ -72,7 +101,7 @@ export default function DashBoardAmin() {
         }}
         type={ETypeModal.ADD}
       />
-      <TableStudents refetch={refetch} listStudents={data} />
+      <TableStudents refetch={refetch} listStudents={filterDataByName()} />
     </div>
   );
 }
