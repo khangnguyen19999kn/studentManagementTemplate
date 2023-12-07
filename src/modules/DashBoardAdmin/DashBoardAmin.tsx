@@ -1,11 +1,11 @@
-import { Button, Input } from "antd";
+import { Button, Input, Skeleton } from "antd";
 import { useState } from "react";
 
 import ModalRegisterUpdateStudent from "@/modules/DashBoardAdmin/components/ModalRegisterUpdateStudent";
 import { ETypeModal, templateData } from "@/modules/DashBoardAdmin/const";
 import useNotification from "@/modules/DashBoardAdmin/hooks/useNotification";
 import { useAddStudent } from "@/services/api/students/useAddStudent";
-import { useGetStudentList } from "@/services/api/students/useGetAllStudent";
+import { useGetStudentByName } from "@/services/api/students/useGetStudentByName";
 
 import TableStudents from "./components/TableStudents";
 import style from "./DashBoardAdminStyle.module.scss";
@@ -14,20 +14,16 @@ import { convertStringToJSON } from "./utils/convertStringToJSON";
 
 export default function DashBoardAmin() {
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const { data: dataStudents, refetch } = useGetStudentList();
   const { mutateAsync: addStudentMutation } = useAddStudent();
   const [inputName, setInputName] = useState("");
   const { openNotificationSuccess, contextHolder } = useNotification();
+  const { data: dataStudents, isLoading, refetch } = useGetStudentByName(inputName);
 
   const jsonString = convertStringToJSON(dataStudents);
-  let data: IStudent[] = [];
-  if (jsonString) {
-    try {
-      data = JSON.parse(jsonString) as IStudent[];
-    } catch (error) {
-      console.error("Error parsing JSON:", error);
-    }
-  }
+  const parseJsonString = (jsonString: string | null): IStudent[] => {
+    if (jsonString) return JSON.parse(jsonString) as IStudent[];
+    return [];
+  };
   const onFinish = async (values: IStudent) => {
     const payload = templateData(
       {
@@ -62,14 +58,14 @@ export default function DashBoardAmin() {
       debouncedHandleInputName(value);
     }, 500);
   };
-  const filterDataByName = () => {
-    if (inputName === "") {
-      return data;
-    }
-    return data.filter(item => {
-      return item.name.toLowerCase().includes(inputName.toLowerCase());
-    });
-  };
+  // const filterDataByName = () => {
+  //   if (inputName === "") {
+  //     return data;
+  //   }
+  //   return data.filter(item => {
+  //     return item.name.toLowerCase().includes(inputName.toLowerCase());
+  //   });
+  // };
 
   return (
     <div className={style.container}>
@@ -101,7 +97,11 @@ export default function DashBoardAmin() {
         }}
         type={ETypeModal.ADD}
       />
-      <TableStudents refetch={refetch} listStudents={filterDataByName()} />
+      {isLoading ? (
+        <Skeleton active />
+      ) : (
+        <TableStudents refetch={refetch} listStudents={parseJsonString(jsonString)} />
+      )}
     </div>
   );
 }

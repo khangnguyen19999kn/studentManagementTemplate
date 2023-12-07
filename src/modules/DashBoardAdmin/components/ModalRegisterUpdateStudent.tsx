@@ -1,5 +1,5 @@
 import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
-import { Modal, Input, DatePicker, Button, Form, InputNumber } from "antd";
+import { Modal, Input, DatePicker, Button, Form, InputNumber, Select } from "antd";
 import dayjs, { Dayjs } from "dayjs";
 import { useEffect } from "react";
 
@@ -13,7 +13,7 @@ interface IModalRegisterUpdateStudentProps {
   title: string;
   onOk?: () => void;
   onCancel?: () => void;
-  onFinish?: (value: any) => void;
+  onFinish?: (value: IStudent) => void;
   onFinishFailed?: (errorInfo: any) => void;
   onChangeDatePicker?: (value: Dayjs | null, dateString: string) => void;
   type: ETypeModal;
@@ -41,6 +41,10 @@ export default function ModalRegisterUpdateStudent({
       password: student?.password,
     });
   }, [student]);
+  useEffect(() => {
+    if (type !== ETypeModal.ADD) return;
+    form.resetFields();
+  }, [visible]);
 
   return (
     <Modal title={title} open={visible} onOk={onOk} onCancel={onCancel} footer={false}>
@@ -65,6 +69,20 @@ export default function ModalRegisterUpdateStudent({
           rules={[{ required: true, message: "Please input student name!" }]}
         >
           <Input placeholder="Enter student name" />
+        </Form.Item>
+        <Form.Item<IStudent>
+          label="Gender"
+          name="gender"
+          rules={[{ required: true, message: "Please input student gender!" }]}
+        >
+          <Select
+            style={{ width: 170 }}
+            placeholder="Select Gender"
+            options={[
+              { value: "MALE", label: "MALE" },
+              { value: "FEMALE", label: "FEMALE" },
+            ]}
+          />
         </Form.Item>
 
         <Form.Item<IStudent>

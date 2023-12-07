@@ -8,6 +8,7 @@ export const templateData = (student: IStudent, type: TTemplateDate) => {
         <student>
           ${type === "edit" ? `<Id>${student.Id}</Id>` : ""}
           <name>${student.name}</name>
+          <gender>${student.gender}</gender>
           <dateBirth>${student.dateBirth}</dateBirth>
           <email>${student.email}</email>
           <gpa>${student.gpa}</gpa>

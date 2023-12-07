@@ -18,11 +18,13 @@ export type TConfigMutation<
 > = UseMutationOptions<TFieldResponse, AxiosError, TFieldPayload>;
 
 const pathStudentAPI = {
-  getAllStudent: "/StudentManagement.asmx/GetAllStudents",
-  updateStudent: "/StudentManagement.asmx?op=UpdateStudent",
-  getStudent: (id: number) => `/StudentManagement.asmx/GetStudent?studentId=${id}`,
-  deleteStudent: "/StudentManagement.asmx/DeleteStudent?studentId=${id}",
-  addStudent: "/StudentManagement.asmx?op=AddStudent",
+  getAllStudent: "/GetAllStudents",
+  updateStudent: "?op=UpdateStudent",
+  getStudent: (name: string) => `/GetStudent?studentName=${name}`,
+  deleteStudent: "/DeleteStudent?studentId=${id}",
+  addStudent: "?op=AddStudent",
+  getGender: "/GetGenderCount",
+  getStatistics: "/GetStudentStatistics",
 };
 export const cspStudentApiXML = axios.create({
   baseURL: import.meta.env.VITE_STUDENT_API as string,
@@ -42,8 +44,8 @@ const studentApi = {
     const response = await cspStudentApiXML.get<string>(pathStudentAPI.getAllStudent);
     return response.data;
   },
-  async getStudentById(id: string) {
-    const response = await cspStudentApiXML.get<string>(pathStudentAPI.getStudent(Number(id)));
+  async getStudentByName(name: string) {
+    const response = await cspStudentApiXML.get<string>(pathStudentAPI.getStudent(name));
     return response.data;
   },
   async updateStudent(student: string): Promise<string> {
@@ -59,6 +61,14 @@ const studentApi = {
   async addStudent(student: string): Promise<string> {
     const response = await cspStudentApiXML.post(pathStudentAPI.addStudent, student);
     return response.data as string;
+  },
+  async getGenderCount() {
+    const response = await cspStudentApiXML.get<string>(pathStudentAPI.getGender);
+    return response.data;
+  },
+  async getStatistics() {
+    const response = await cspStudentApiXML.get<string>(pathStudentAPI.getStatistics);
+    return response.data;
   },
 };
 

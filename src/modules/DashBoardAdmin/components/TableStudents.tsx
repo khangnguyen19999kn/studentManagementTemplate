@@ -48,6 +48,11 @@ export default function TableStudents({ listStudents, refetch }: ITableStudents)
       },
     },
     {
+      title: "Gender",
+      dataIndex: "gender",
+      key: "gender",
+    },
+    {
       title: "Date of Birth",
       dataIndex: "dateBirth",
       key: "dateBirth",
@@ -117,6 +122,7 @@ export default function TableStudents({ listStudents, refetch }: ITableStudents)
     setIsModalOpen(false);
   };
   const onFinish = async (values: IStudent) => {
+    console.log(values);
     const payload = templateData(
       {
         ...values,
